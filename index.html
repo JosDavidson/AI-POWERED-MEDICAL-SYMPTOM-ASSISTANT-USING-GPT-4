@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediSense AI - Medical Symptom Assistant using GPT-4</title>
+  <meta name="description" content="AI-Powered Medical Symptom Assistant using GPT-4 for preliminary symptom analysis, triage, follow-up questions, and safety disclaimers. 100% offline capable with zero mobile data usage.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand-section">
+        <div class="brand-icon">🩺</div>
+        <div class="brand-info">
+          <h1>
+            MediSense AI
+            <span class="badge-tag">GPT-4 Engine</span>
+            <span class="badge-offline"><span class="pulse-dot"></span> 0 Mobile Data (100% Offline Ready)</span>
+          </h1>
+          <p>24CS2506 – Experiment 6: AI-Powered Medical Symptom Assistant using GPT-4</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="themeToggleBtn" class="btn-icon" title="Toggle Theme">
+          <span>🌓</span> <span id="themeLabel">Theme</span>
+        </button>
+        <button id="quickDemoBtn" class="btn-primary">
+          <span>⚡</span> Quick Patient Demo
+        </button>
+      </div>
+    </header>
+
+    <!-- Stepper Navigation -->
+    <nav class="stepper-nav" id="mainStepper">
+      <button class="step-tab active" data-tab="tab-overview">
+        <span class="step-num">★</span> Overview & Architecture
+      </button>
+      <button class="step-tab" data-tab="tab-intake">
+        <span class="step-num">1</span> Patient Intake
+      </button>
+      <button class="step-tab" data-tab="tab-symptoms">
+        <span class="step-num">2</span> Symptom Extraction
+      </button>
+      <button class="step-tab" data-tab="tab-context">
+        <span class="step-num">3</span> Context & Risk
+      </button>
+      <button class="step-tab" data-tab="tab-prompt">
+        <span class="step-num">4</span> Prompt Generation
+      </button>
+      <button class="step-tab" data-tab="tab-reasoning">
+        <span class="step-num">5</span> GPT-4 Reasoning
+      </button>
+      <button class="step-tab" data-tab="tab-analysis">
+        <span class="step-num">6</span> Clinical Analysis
+      </button>
+      <button class="step-tab" data-tab="tab-reports">
+        <span class="step-num">7</span> Save & Export
+      </button>
+      <button class="step-tab" data-tab="tab-record">
+        <span class="step-num">📋</span> Lab Record Companion
+      </button>
+    </nav>
+
+    <!-- Emergency Red-Flag Banner (Dynamically Shown) -->
+    <div id="redFlagBanner" class="red-flag-banner" style="display: none;">
+      <div class="red-flag-icon">🚨</div>
+      <div class="red-flag-content">
+        <h3>EMERGENCY MEDICAL ATTENTION REQUIRED</h3>
+        <p id="redFlagDetails">Potential critical symptom detected. Please do not wait for AI analysis—call local emergency services (911 / 112) or proceed to the nearest emergency room immediately.</p>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- TAB 1: OVERVIEW & SYSTEM ARCHITECTURE                         -->
+    <!-- ============================================================== -->
+    <section id="tab-overview" class="tab-content active">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title"><span>🏥</span> Experiment Overview & Clinical Objectives</h2>
+            <p class="card-desc">Course: 24CS2506 - Building Applications using GPT-4 | Experiment No.: 6</p>
+          </div>
+          <span class="badge-tag">Academic Standard</span>
+        </div>
+        <div class="grid-2">
+          <div>
+            <h4 style="color: var(--primary); margin-bottom: 0.5rem;">🎯 Aim of the Experiment</h4>
+            <p style="font-size: 0.92rem; color: var(--text-secondary); line-height: 1.6;">
+              To develop an AI-powered medical symptom assistant using GPT-4 that analyzes user-reported symptoms, identifies possible associated conditions, generates relevant clinical follow-up questions, and provides general guidance regarding professional medical attention with rigorous safety guardrails.
+            </p>
+            <h4 style="color: var(--primary); margin: 1.25rem 0 0.5rem 0;">📝 Problem Statement</h4>
+            <p style="font-size: 0.92rem; color: var(--text-secondary); line-height: 1.6;">
+              Design and develop an AI-powered medical symptom assistant using GPT-4. The application should collect basic user information and symptoms, analyze the reported symptoms, identify possible conditions, generate follow-up questions, and present the results in a structured format. The system must include appropriate safety instructions and clearly state that the generated output is <strong>not a medical diagnosis</strong>.
+            </p>
+          </div>
+          <div style="background: rgba(0,0,0,0.2); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+            <h4 style="color: var(--secondary); margin-bottom: 0.75rem;">🛡️ Safety & Clinical Principles</h4>
+            <ul style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.7; padding-left: 1.25rem;">
+              <li><strong>Informational Only:</strong> Communicates diagnostic uncertainty; never issues a definitive prescription.</li>
+              <li><strong>Zero Mobile Data Mode:</strong> Built-in local rule-based clinical engine runs 100% offline without network costs.</li>
+              <li><strong>Red-Flag Emergency Interceptor:</strong> Immediately escalates severe symptoms (chest pain, dyspnea, cyanosis).</li>
+              <li><strong>Contextual Triangulation:</strong> Evaluates age, duration, comorbidities, and medications alongside symptoms.</li>
+              <li><strong>Structured JSON / Markdown Reporting:</strong> Clean clinical documentation matching lab requirements.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- System Architecture Diagram Card -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title"><span>🏗️</span> System Architecture Workflow</h2>
+          <span class="badge-offline">10-Stage Pipeline</span>
+        </div>
+        <p class="card-desc" style="margin-bottom: 1.5rem;">
+          End-to-end data pipeline from user input ingestion through symptom normalization, prompt generation, LLM reasoning, to structured medical guidance.
+        </p>
+        <div class="architecture-container">
+          <!-- Flow Level 1 -->
+          <div class="arch-row">
+            <div class="arch-node">
+              <div class="arch-node-title">1. User / Patient Input</div>
+              <div class="arch-node-desc">Free-text symptoms, demographics, severity</div>
+            </div>
+            <div class="arch-arrow">➔</div>
+            <div class="arch-node">
+              <div class="arch-node-title">2. Patient Profile</div>
+              <div class="arch-node-desc">Age cohort & clinical history validation</div>
+            </div>
+            <div class="arch-arrow">➔</div>
+            <div class="arch-node">
+              <div class="arch-node-title">3. Symptom Extraction</div>
+              <div class="arch-node-desc">NLP normalization & system tagging</div>
+            </div>
+          </div>
+          <!-- Flow Level 2 -->
+          <div class="arch-row">
+            <div class="arch-arrow">⬇</div>
+          </div>
+          <div class="arch-row">
+            <div class="arch-node">
+              <div class="arch-node-title">4. Context & Risk Analysis</div>
+              <div class="arch-node-desc">Comorbidity & drug allergy evaluator</div>
+            </div>
+            <div class="arch-arrow">➔</div>
+            <div class="arch-node" style="border-color: var(--primary); background: var(--primary-light);">
+              <div class="arch-node-title" style="color: var(--primary);">5. Prompt Generation</div>
+              <div class="arch-node-desc">Strict system prompt & JSON schema</div>
+            </div>
+            <div class="arch-arrow">➔</div>
+            <div class="arch-node" style="border-color: var(--secondary); background: var(--secondary-light);">
+              <div class="arch-node-title" style="color: var(--secondary);">6. GPT-4 Reasoning</div>
+              <div class="arch-node-desc">Differential diagnosis & triage engine</div>
+            </div>
+          </div>
+          <!-- Flow Level 3 -->
+          <div class="arch-row">
+            <div class="arch-arrow">⬇</div>
+          </div>
+          <div class="arch-row">
+            <div class="arch-node">
+              <div class="arch-node-title">7. Possible Conditions</div>
+              <div class="arch-node-desc">Ranked differential possibilities</div>
+            </div>
+            <div class="arch-arrow">➔</div>
+            <div class="arch-node">
+              <div class="arch-node-title">8. Follow-Up Questions</div>
+              <div class="arch-node-desc">Targeted clinical triage questionnaire</div>
+            </div>
+            <div class="arch-arrow">➔</div>
+            <div class="arch-node">
+              <div class="arch-node-title">9. Safety & Disclaimers</div>
+              <div class="arch-node-desc">Urgency classification & disclaimers</div>
+            </div>
+            <div class="arch-arrow">➔</div>
+            <div class="arch-node">
+              <div class="arch-node-title">10. Save & Export Report</div>
+              <div class="arch-node-desc">JSON / Markdown / Printable PDF</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- TAB 2: PATIENT INTAKE (INPUT & PROFILE MODULES)                -->
+    <!-- ============================================================== -->
+    <section id="tab-intake" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title"><span>👤</span> Patient Intake & Clinical Parameters</h2>
+            <p class="card-desc">Modules 1 & 2: Input Module & Profile Module</p>
+          </div>
+          <button id="clearFormBtn" class="btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Reset Form</button>
+        </div>
+
+        <!-- Preset Patient Scenarios -->
+        <div class="form-group">
+          <label class="form-label">✨ Load Clinical Demonstration Preset (0-Data Instant Case):</label>
+          <div class="presets-bar">
+            <button class="preset-chip" data-preset="respiratory">
+              <span>🫁</span> Acute Upper Respiratory (Flu / Cold)
+            </button>
+            <button class="preset-chip" data-preset="migraine">
+              <span>🧠</span> Acute Migraine with Aura
+            </button>
+            <button class="preset-chip" data-preset="gastro">
+              <span>🤢</span> Viral Gastroenteritis
+            </button>
+            <button class="preset-chip" data-preset="allergy">
+              <span>🌸</span> Seasonal Allergic Rhinitis
+            </button>
+            <button class="preset-chip" data-preset="cardiac" style="color: #f87171; border-color: rgba(239,68,68,0.4);">
+              <span>🚨</span> Red-Flag Cardiac Triage (Emergency Test)
+            </button>
+          </div>
+        </div>
+
+        <form id="patientForm">
+          <div class="grid-3">
+            <div class="form-group">
+              <label class="form-label" for="patientAge">Patient Age</label>
+              <input type="number" id="patientAge" class="form-control" value="22" min="1" max="115" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="patientSex">Biological Sex</label>
+              <select id="patientSex" class="form-select">
+                <option value="Female" selected>Female</option>
+                <option value="Male">Male</option>
+                <option value="Other">Other / Unspecified</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="symptomDuration">Symptom Duration</label>
+              <input type="text" id="symptomDuration" class="form-control" value="2 days" placeholder="e.g. 2 days, 1 week">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="symptomText">Reported Symptoms (Natural Language Free-Text)</label>
+            <textarea id="symptomText" class="form-control" rows="3" placeholder="Describe symptoms in your own words, e.g. I have a sore throat, mild fever, and dry cough since yesterday. I also feel tired and have a mild headache.">I have had a sore throat, mild fever, and dry cough for the past two days. I also feel slightly tired and have a mild headache.</textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Reported Severity Level</label>
+            <div class="severity-selector">
+              <div class="severity-option">
+                <input type="radio" id="sevMild" name="severity" value="Mild" checked>
+                <label for="sevMild" class="severity-label">🟢 Mild</label>
+              </div>
+              <div class="severity-option">
+                <input type="radio" id="sevMod" name="severity" value="Moderate">
+                <label for="sevMod" class="severity-label">🟡 Moderate</label>
+              </div>
+              <div class="severity-option">
+                <input type="radio" id="sevSev" name="severity" value="Severe">
+                <label for="sevSev" class="severity-label">🟠 Severe</label>
+              </div>
+              <div class="severity-option">
+                <input type="radio" id="sevCrit" name="severity" value="Critical">
+                <label for="sevCrit" class="severity-label">🔴 Critical</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <div class="form-group">
+              <label class="form-label" for="medHistory">Pre-existing Conditions / Medical History</label>
+              <input type="text" id="medHistory" class="form-control" value="Mild seasonal asthma" placeholder="e.g. Asthma, Diabetes, Hypertension, None">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="currentMeds">Current Medications</label>
+              <input type="text" id="currentMeds" class="form-control" value="Albuterol inhaler as needed" placeholder="e.g. Inhaler, Metformin, None">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="allergies">Known Allergies</label>
+              <input type="text" id="allergies" class="form-control" value="No known drug allergies" placeholder="e.g. Penicillin, Peanuts, None">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="additionalInfo">Additional Information / Lifestyle Context</label>
+            <input type="text" id="additionalInfo" class="form-control" value="College student during midterms, feeling mildly stressed" placeholder="e.g. Recent travel, exposure to sick contacts, pregnancy">
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem;">
+            <button type="button" id="analyzeBtn" class="btn-primary" style="padding: 0.75rem 1.75rem; font-size: 1rem;">
+              <span>🚀</span> Analyze Symptoms & Run Pipeline
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- TAB 3: SYMPTOM EXTRACTION (SYMPTOM MODULE)                     -->
+    <!-- ============================================================== -->
+    <section id="tab-symptoms" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title"><span>🔍</span> Symptom Extraction & Categorization</h2>
+            <p class="card-desc">Module 3: Symptom Module (NLP Parsing, Terminology Normalization & System Mapping)</p>
+          </div>
+          <span class="badge-offline">Zero Mobile Data NLP</span>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <h4 style="color: var(--primary); margin-bottom: 0.6rem;">Raw Input Query:</h4>
+            <div id="rawSymptomDisplay" style="background: rgba(0,0,0,0.25); padding: 1rem; border-radius: var(--radius-md); font-size: 0.92rem; color: var(--text-secondary); border-left: 3px solid var(--primary);">
+              "I have had a sore throat, mild fever, and dry cough for the past two days..."
+            </div>
+
+            <h4 style="color: var(--primary); margin: 1.25rem 0 0.6rem 0;">Normalized Clinical Symptom Entities:</h4>
+            <div id="symptomChipsContainer" class="symptom-tag-container">
+              <!-- Dynamically populated chips -->
+            </div>
+          </div>
+
+          <div>
+            <h4 style="color: var(--secondary); margin-bottom: 0.6rem;">Affected Physiological Organ Systems:</h4>
+            <div id="systemsContainer" style="display: flex; flex-direction: column; gap: 0.75rem;">
+              <!-- Dynamically populated categories -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- TAB 4: CONTEXT & RISK ANALYSIS (CONTEXT MODULE)                -->
+    <!-- ============================================================== -->
+    <section id="tab-context" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title"><span>⚖️</span> Context & Risk Evaluation</h2>
+            <p class="card-desc">Module 4: Context Module (Comorbidity Matrix, Vulnerability Scoring & Allergy Profiling)</p>
+          </div>
+          <span id="riskBadge" class="badge-tag">Low Risk</span>
+        </div>
+
+        <div class="grid-3">
+          <div class="symptom-category-card">
+            <div class="symptom-category-title"><span>📊</span> Patient Vulnerability Score</div>
+            <div style="font-size: 2.2rem; font-weight: 800; color: var(--primary); margin: 0.5rem 0;" id="vulnScoreDisplay">
+              2 / 5
+            </div>
+            <p style="font-size: 0.84rem; color: var(--text-muted);" id="vulnScoreDesc">
+              Low to mild vulnerability based on age cohort, reported severity, and baseline health.
+            </p>
+          </div>
+
+          <div class="symptom-category-card">
+            <div class="symptom-category-title"><span>🧬</span> Comorbidity Matrix</div>
+            <div id="comorbiditiesDisplay" style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.5rem;">
+              Mild seasonal asthma detected. Monitored for bronchial hyperresponsiveness.
+            </div>
+          </div>
+
+          <div class="symptom-category-card">
+            <div class="symptom-category-title"><span>💊</span> Allergy & Drug Alerts</div>
+            <div id="allergyDisplay" style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.5rem;">
+              No known drug allergies reported. Safe for standard over-the-counter considerations.
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 1.25rem;">
+          <h4 style="color: var(--text-primary); margin-bottom: 0.6rem;">Identified Contextual Modifiers:</h4>
+          <ul id="contextModifiersList" style="font-size: 0.9rem; color: var(--text-secondary); padding-left: 1.25rem; line-height: 1.7;">
+            <!-- Populated via JS -->
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- TAB 5: PROMPT ENGINEERING (PROMPT MODULE)                      -->
+    <!-- ============================================================== -->
+    <section id="tab-prompt" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title"><span>⚙️</span> Dynamic Clinical Prompt Generation</h2>
+            <p class="card-desc">Module 5: Prompt Module (Role Framing, Constraints, Guardrails & Output Schema)</p>
+          </div>
+          <button id="copyPromptBtn" class="btn-secondary" style="font-size: 0.8rem;">📋 Copy Prompt</button>
+        </div>
+        <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.8rem;">
+          Below is the structured prompt synthesized by the Prompt Module, adhering to clinical AI guardrails and enforcing strict JSON output:
+        </p>
+        <pre id="promptPreview" class="code-preview">Prompt will appear here after patient intake...</pre>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- TAB 6: GPT-4 & CLINICAL REASONING ENGINE                       -->
+    <!-- ============================================================== -->
+    <section id="tab-reasoning" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title"><span>🤖</span> Clinical AI Reasoning Engine</h2>
+            <p class="card-desc">Module 6: Analysis Module (Differential Diagnosis & Clinical Decision Support)</p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <select id="engineModeSelect" class="form-select" style="width: auto; padding: 0.4rem 0.8rem; font-size: 0.82rem;">
+              <option value="offline" selected>⚡ Built-in Clinical Engine (0-Data Offline)</option>
+              <option value="api">🌐 Custom GPT-4 / Ollama API</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Optional API Configuration (Collapsed by Default) -->
+        <div id="apiConfigPanel" style="display: none; background: rgba(0,0,0,0.25); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1rem; border: 1px solid var(--border-subtle);">
+          <div class="grid-2">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">API Endpoint / Base URL</label>
+              <input type="text" id="apiEndpoint" class="form-control" value="http://localhost:11434/api/generate" placeholder="e.g. https://api.openai.com/v1/chat/completions">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">API Key (Optional for Ollama)</label>
+              <input type="password" id="apiKey" class="form-control" placeholder="sk-...">
+            </div>
+          </div>
+        </div>
+
+        <h4 style="color: var(--primary); margin-bottom: 0.6rem;">Structured AI Differential Payload:</h4>
+        <pre id="rawEngineOutput" class="code-preview">Run analysis to view the GPT-4 reasoning output...</pre>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- TAB 7: STRUCTURED CLINICAL ANALYSIS (RESULTS)                  -->
+    <!-- ============================================================== -->
+    <section id="tab-analysis" class="tab-content">
+      <!-- Triage Urgency Header Card -->
+      <div class="card" id="triageCard" style="border-left: 5px solid var(--primary);">
+        <div class="card-header" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0.5rem;">
+          <h2 class="card-title" id="triageTitle"><span>🩺</span> Clinical Triage Assessment: Routine Self-Care & Monitoring</h2>
+          <span id="triageBadge" class="badge-tag">Routine</span>
+        </div>
+        <p id="triageDescription" style="font-size: 0.92rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+          Based on the reported symptoms, duration, and patient context, the recommended medical attention level is routine evaluation and self-monitoring.
+        </p>
+      </div>
+
+      <!-- Possible Conditions -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title"><span>📑</span> Possible Associated Conditions Considered</h2>
+            <p class="card-desc">Differential conditions ranked by clinical pattern matching and symptom correlation</p>
+          </div>
+          <span class="badge-tag">Differential Possibilities</span>
+        </div>
+        <div id="conditionsList">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+
+      <!-- Follow-up Questions -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title"><span>❓</span> Recommended Clinical Follow-up Questions</h2>
+            <p class="card-desc">Module 7: Question Module (Targeted questions to rule out complications or red-flags)</p>
+          </div>
+        </div>
+        <div id="questionsList">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+
+      <!-- Medical Attention Guidance & Action Plan -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title"><span>🩺</span> Medical Attention Guidance & Care Plan</h2>
+            <p class="card-desc">Module 8: Safety Module (General self-care guidance and immediate clinical escalation triggers)</p>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <h4 style="color: var(--success); margin-bottom: 0.6rem;">🌱 Supportive Self-Care Recommendations:</h4>
+            <ul id="selfCareList" style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.8; padding-left: 1.25rem;">
+              <!-- Populated via JS -->
+            </ul>
+          </div>
+          <div>
+            <h4 style="color: var(--danger); margin-bottom: 0.6rem;">⚠️ Triggers for Immediate Medical Attention:</h4>
+            <ul id="triggersList" style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.8; padding-left: 1.25rem;">
+              <!-- Populated via JS -->
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mandatory Medical Disclaimer -->
+      <div class="disclaimer-card">
+        <div class="disclaimer-title">
+          <span>⚠️</span> Official Medical & Legal Safety Disclaimer
+        </div>
+        <div class="disclaimer-text">
+          <strong>NOT A MEDICAL DIAGNOSIS:</strong> This artificial intelligence system is designed strictly for informational and educational purposes. It does not provide medical diagnoses, treatment plans, or clinical prescriptions. Medical conditions and severe symptoms require personal examination and diagnostic testing by a licensed physician or healthcare professional. If you are experiencing difficulty breathing, crushing chest pain, sudden numbness, or any other life-threatening medical emergency, call <strong>911 / 112</strong> or proceed to the nearest emergency room immediately.
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- TAB 8: SAVE & EXPORT (SAVE MODULE)                             -->
+    <!-- ============================================================== -->
+    <section id="tab-reports" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title"><span>💾</span> Save & Export Medical Analysis Reports</h2>
+            <p class="card-desc">Module 9: Save Module (Structured JSON, Markdown Documentation & Clinical PDF Export)</p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button id="downloadJsonBtn" class="btn-secondary" style="font-size: 0.82rem;">⬇️ Download JSON</button>
+            <button id="downloadMdBtn" class="btn-secondary" style="font-size: 0.82rem;">⬇️ Download Markdown</button>
+            <button id="printReportBtn" class="btn-primary" style="font-size: 0.82rem;">🖨️ Print / Save PDF</button>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <h4 style="color: var(--primary); margin-bottom: 0.6rem;">Case Metadata & Audit Trail:</h4>
+            <div style="background: rgba(0,0,0,0.25); padding: 1.25rem; border-radius: var(--radius-md); font-size: 0.88rem; line-height: 1.7; border: 1px solid var(--border-subtle);">
+              <div><strong>Case / Patient ID:</strong> <span id="reportCaseId">PAT-20261027-001</span></div>
+              <div><strong>Generated Timestamp:</strong> <span id="reportTimestamp">-</span></div>
+              <div><strong>Triage Level:</strong> <span id="reportTriageLevel">Routine</span></div>
+              <div><strong>Identified Symptoms:</strong> <span id="reportSymptomsSummary">-</span></div>
+              <div><strong>Safety Flags:</strong> <span id="reportSafetyStatus">None</span></div>
+            </div>
+          </div>
+          <div>
+            <h4 style="color: var(--secondary); margin-bottom: 0.6rem;">Formatted Markdown Preview:</h4>
+            <pre id="markdownPreview" class="code-preview" style="max-height: 300px;">Markdown report will generate upon analysis...</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- TAB 9: LAB RECORD COMPANION (FOR ACADEMIC RECORD-6)            -->
+    <!-- ============================================================== -->
+    <section id="tab-record" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title"><span>📋</span> Experiment 6 Lab Record Submission Companion</h2>
+            <p class="card-desc">Pre-filled Academic Tables & Documentation for LAB RECORD-6.docx</p>
+          </div>
+          <button id="copyLabTablesBtn" class="btn-primary" style="font-size: 0.82rem;">📋 Copy Lab Record Text</button>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+          <h3 style="color: var(--primary); font-size: 1.05rem; margin-bottom: 0.6rem;">Table 1: Experiment Identification</h3>
+          <div class="table-responsive">
+            <table class="academic-table">
+              <thead>
+                <tr>
+                  <th>Ex. No.</th>
+                  <th>Experiment Title</th>
+                  <th>Course Code & Title</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>6</strong></td>
+                  <td><strong>AI-POWERED MEDICAL SYMPTOM ASSISTANT USING GPT-4</strong></td>
+                  <td>24CS2506 – Building Applications using GPT-4</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+          <h3 style="color: var(--primary); font-size: 1.05rem; margin-bottom: 0.6rem;">Table 2: Software Requirements</h3>
+          <div class="table-responsive">
+            <table class="academic-table">
+              <thead>
+                <tr>
+                  <th>Software</th>
+                  <th>Version</th>
+                  <th>Purpose / Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Python</strong></td>
+                  <td>3.11.x</td>
+                  <td>Core runtime for backend CLI, NLP processing, and data modeling</td>
+                </tr>
+                <tr>
+                  <td><strong>Ollama</strong></td>
+                  <td>0.3.x / API</td>
+                  <td>Local LLM inference server for offline private clinical reasoning</td>
+                </tr>
+                <tr>
+                  <td><strong>VS Code</strong></td>
+                  <td>1.90.x</td>
+                  <td>Integrated Development Environment for full-stack editing and debugging</td>
+                </tr>
+                <tr>
+                  <td><strong>Pandas</strong></td>
+                  <td>2.2.x</td>
+                  <td>Data structuring, patient records serialization, and tabular analysis</td>
+                </tr>
+                <tr>
+                  <td><strong>Sentence Transformers</strong></td>
+                  <td>3.0.x</td>
+                  <td>Semantic similarity scoring for symptom dictionary matching and entity extraction</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+          <h3 style="color: var(--primary); font-size: 1.05rem; margin-bottom: 0.6rem;">Table 3: Input Parameters</h3>
+          <div class="table-responsive">
+            <table class="academic-table">
+              <thead>
+                <tr>
+                  <th>Parameter</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Age</strong></td>
+                  <td>Numerical age of patient to determine age-specific vulnerability and clinical cohorts</td>
+                </tr>
+                <tr>
+                  <td><strong>Sex</strong></td>
+                  <td>Biological sex or gender where relevant for gender-specific physiological differentials</td>
+                </tr>
+                <tr>
+                  <td><strong>Symptoms</strong></td>
+                  <td>Natural language user descriptions of experienced symptoms, sensations, and discomfort</td>
+                </tr>
+                <tr>
+                  <td><strong>Duration</strong></td>
+                  <td>Time elapsed since symptom onset (hours, days, weeks) to distinguish acute vs chronic states</td>
+                </tr>
+                <tr>
+                  <td><strong>Severity</strong></td>
+                  <td>Patient-rated subjective intensity rating (Mild, Moderate, Severe, Critical)</td>
+                </tr>
+                <tr>
+                  <td><strong>Medical History</strong></td>
+                  <td>Known pre-existing health conditions (e.g. Asthma, Diabetes, Hypertension, CAD)</td>
+                </tr>
+                <tr>
+                  <td><strong>Medication</strong></td>
+                  <td>Currently prescribed or over-the-counter pharmaceuticals taken by the patient</td>
+                </tr>
+                <tr>
+                  <td><strong>Allergies</strong></td>
+                  <td>Known drug, environmental, or dietary allergies to prevent contraindicated suggestions</td>
+                </tr>
+                <tr>
+                  <td><strong>Additional Information</strong></td>
+                  <td>Contextual lifestyle factors (stress, sleep, pregnancy status, recent travel, infectious exposures)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+          <h3 style="color: var(--primary); font-size: 1.05rem; margin-bottom: 0.6rem;">Table 5: Module Design & Responsibilities</h3>
+          <div class="table-responsive">
+            <table class="academic-table">
+              <thead>
+                <tr>
+                  <th>Module</th>
+                  <th>Responsibility</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Input Module</strong></td>
+                  <td>Collects raw patient demographic details, free-text symptoms, and health parameters via interactive Web UI and terminal CLI.</td>
+                </tr>
+                <tr>
+                  <td><strong>Profile Module</strong></td>
+                  <td>Validates, sanitizes, and builds structured patient profile objects with unique Case IDs, timestamps, and age cohorts.</td>
+                </tr>
+                <tr>
+                  <td><strong>Symptom Module</strong></td>
+                  <td>Parses natural language symptom text, normalizes clinical terminology, and maps symptoms to physiological organ systems.</td>
+                </tr>
+                <tr>
+                  <td><strong>Context Module</strong></td>
+                  <td>Calculates patient vulnerability risk scores (1-5) by analyzing comorbidity interactions, age modifiers, and drug allergies.</td>
+                </tr>
+                <tr>
+                  <td><strong>Prompt Module</strong></td>
+                  <td>Synthesizes clinical GPT-4 prompts with system role definitions, strict non-diagnostic guardrails, and JSON response schemas.</td>
+                </tr>
+                <tr>
+                  <td><strong>Analysis Module</strong></td>
+                  <td>Evaluates differential conditions, physiological rationales, and likelihoods via local offline heuristic engine or LLM API.</td>
+                </tr>
+                <tr>
+                  <td><strong>Question Module</strong></td>
+                  <td>Generates targeted clinical follow-up questions to clarify symptom progression, fever peaks, or associated red-flags.</td>
+                </tr>
+                <tr>
+                  <td><strong>Safety Module</strong></td>
+                  <td>Detects emergency red-flag symptoms, determines triage urgency levels (Emergency, Urgent, Routine), and embeds safety disclaimers.</td>
+                </tr>
+                <tr>
+                  <td><strong>Save Module</strong></td>
+                  <td>Serializes, formats, and persists complete clinical analysis reports into structured JSON, Markdown, and printable PDF documents.</td>
+                </tr>
+                <tr>
+                  <td><strong>Main Module</strong></td>
+                  <td>Orchestrates the complete 10-module execution pipeline, managing application state, event handlers, and interface rendering.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 13 Screenshot Guide for Student -->
+        <div>
+          <h3 style="color: var(--primary); font-size: 1.05rem; margin-bottom: 0.6rem;">📸 Required Output Screenshots Checklist (13 Total)</h3>
+          <ol style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.8; padding-left: 1.25rem;">
+            <li><strong>Home Screen:</strong> Tab 1 showing Header, Overview, and System Architecture Diagram.</li>
+            <li><strong>Patient Information Input:</strong> Tab 2 showing Age, Sex, Duration, and Pre-existing conditions.</li>
+            <li><strong>Symptom Input:</strong> Tab 2 showing free-text symptom description and severity selector.</li>
+            <li><strong>Extracted Symptoms:</strong> Tab 3 showing normalized symptom entity chips and affected organ systems.</li>
+            <li><strong>Context Analysis:</strong> Tab 4 showing Vulnerability Score (1-5), Comorbidity Matrix, and Allergy alerts.</li>
+            <li><strong>Prompt Generation:</strong> Tab 5 showing synthesized GPT-4 clinical system prompt with guardrails.</li>
+            <li><strong>GPT-4 Response:</strong> Tab 6 showing raw LLM / Clinical Reasoning output JSON payload.</li>
+            <li><strong>Possible Conditions:</strong> Tab 7 showing ranked differential condition cards with likelihood badges.</li>
+            <li><strong>Follow-up Questions:</strong> Tab 7 showing targeted clinical triage questions.</li>
+            <li><strong>Medical Attention Guidance:</strong> Tab 7 showing supportive self-care recommendations and immediate triggers.</li>
+            <li><strong>Complete Structured Analysis:</strong> Tab 7 full view of the comprehensive clinical report.</li>
+            <li><strong>Disclaimer:</strong> Tab 7 bottom card displaying the prominent yellow medical & legal safety notice.</li>
+            <li><strong>Saved Report:</strong> Tab 8 showing saved Case ID, audit trail, and formatted Markdown/JSON preview.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastMsg" class="toast-msg">Notification</div>
+
+  <script src="app.js"></script>
+</body>
+</html>

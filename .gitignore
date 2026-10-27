@@ -1,0 +1,21 @@
+# Document and record exclusions (as requested)
+*.docx
+*.pdf
+*RECORD*
+*PREPARATION*
+
+# Python & Environment
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# Logs and temp files
+*.log
+temp_*
+.DS_Store
+Thumbs.db
